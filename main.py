@@ -30,11 +30,13 @@ class CompareReq(BaseModel):
 
 class CompareRes(BaseModel):
     score: int
+    choiced_country_geojson: str
 
 @router.post("/compare", response_model=CompareRes)
 async def compare(req: CompareReq):
     score: int = compare_contour(req.choiced_country, req.question_country)
-    return {"score": score}
+    geojsonData = get_country_polygon(req.choiced_country)
+    return {"score": score, "choiced_country_geojson": geojsonData}
     
 
 app.include_router(router)
