@@ -1,5 +1,5 @@
 from fastapi import APIRouter, FastAPI
-from geojson import get_rondom_country_data, compare_contour
+from geojson_logic import get_rondom_country_data, compare_contour, get_country_polygon
 from pydantic import BaseModel
 
 app = FastAPI()
@@ -14,12 +14,14 @@ router = APIRouter(prefix="/geojson", tags=["article"])
 
 class QuestionRes(BaseModel):
     NAME_JA: str
+    data: str
 
 @router.get("/question", response_model=QuestionRes)
 async def question():
     record = get_rondom_country_data()
     country: str = record["NAME_JA"]
-    return {"NAME_JA": country}
+    geojsonData = get_country_polygon(country)
+    return {"NAME_JA": country, "data": geojsonData}
 
 
 class CompareReq(BaseModel):

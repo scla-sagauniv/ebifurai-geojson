@@ -1,10 +1,11 @@
+import io
 import math
 import random
 import cv2
 import numpy as np
 import geopandas as gpd
 from shapely.geometry import MultiPolygon
-# from geojson import Polygon, Feature, FeatureCollection, dump
+from geojson import Polygon, Feature, dump
 
 
 geojson_path = "test2.geojson"
@@ -22,6 +23,18 @@ def get_rondom_country_data():
     random_index = random.randint(0, len(gdf) - 1)
     random_record = gdf.iloc[random_index]
     return random_record
+
+def get_country_polygon(NAME_JA: str):
+    country_contour = load_contour_by_NAME_JA(NAME_JA)
+    feature = Feature(
+        geometry=Polygon(coordinates=[country_contour.tolist()]), properties={}
+    )
+    string_buffer = io.StringIO()
+    dump(feature, string_buffer)
+    geojson_str = string_buffer.getvalue()
+    string_buffer.close()
+    return geojson_str
+
 
 def compare_contour(name_ja1, name_ja2):
     country1_contour = load_contour_by_NAME_JA(name_ja1)
